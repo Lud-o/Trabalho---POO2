@@ -427,7 +427,7 @@ public class Sistema {
         return bancoAlunosOR;
     }
 
-    // Função listar(tabela)--
+    // Função listar(tabela)
     // disciplinas
     public static void listarDisciplinas() {
         if (totalDisciplinas == 0) {
@@ -450,7 +450,6 @@ public class Sistema {
 
     // alunos ordem codigo
     public static void listarAlunosOC() {
-        // String traco = "-".repeat(60); // Resultado: "------"
         if (totalAlunos == 0) {
             System.out.println("Nenhum Aluno está cadastrado!");
             return;// volta pro menu
@@ -489,7 +488,6 @@ public class Sistema {
 
     // alunos ordem media decrescente
     public static void listarAlunosOMd() {
-        // String traco = "-".repeat(60); // Resultado: "------"
         if (totalAlunos == 0) {
             System.out.println("Nenhum Aluno está cadastrado!");
             return;// volta pro menu
@@ -535,7 +533,7 @@ public class Sistema {
             return;
         }
 
-        //
+        
         String formatoCabecalho = "%-5s | %-" + larguraColuna + "s | %-7s | %-3s\n";
         System.out.printf(formatoCabecalho, "ID", "DISCIPLINA", "SIGLA", "QTD. DE ALUNOS");
         System.out.println();
@@ -563,7 +561,7 @@ public class Sistema {
 
     }
 
-    // Funções de Alterar--
+    // Funções de Alterar
     // menu alterar dados
     public static void alterarDados() {
         int op = -1;
@@ -738,7 +736,7 @@ public class Sistema {
                     break;
 
                 case 3:
-                    alterarMatricula(); // Aquela função completinha que já criamos!
+                    alterarMatricula(); 
                     break;
 
                 case 0:
@@ -781,7 +779,7 @@ public class Sistema {
                 Matricula m = aluno.disciplinasMatriculadas[i];
                 String sigla = buscacdSigla(m.codigoDisciplina);
 
-                // menu : [1] CALC1 - Nota Atual: 8.5
+                // menu ex: [1] CALC1 - Nota Atual: 8.5
                 System.out.printf("[%d] %s - Nota Atual: %.2f\n", (i + 1), sigla, m.nota);
             }
 
@@ -827,10 +825,10 @@ public class Sistema {
 
             if (indice == -1) {
                 System.out.println("ERRO: Aluno não encontrado! Tente novamente.");
-                continue; // 
+                continue; 
             }
 
-            // 1ª Trava: Confirmação
+            // Confirmação
             System.out.print("ATENÇÃO: Tem certeza que deseja excluir '" + bancoAlunos[indice].nome + "'? (S/N): ");
             String confirmacao = sc.nextLine();
 
@@ -846,7 +844,7 @@ public class Sistema {
 
             totalAlunos--;
             System.out.println("SUCESSO: Aluno excluído permanentemente!");
-            return; // 
+            return;  
         }
     }
 
@@ -870,7 +868,7 @@ public class Sistema {
 
             Disciplina d = bancoDisciplinas[indice];
 
-            // 1ª Trava de Segurança: A Verificação de Matrículas
+            // Verificação de Matrículas
             boolean temGenteMatriculada = false;
 
             for (int i = 0; i < totalAlunos; i++) {
