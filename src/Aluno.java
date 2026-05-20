@@ -1,5 +1,5 @@
 public class Aluno {
-    int codigo;
+    private Matricula mat;
     String nome;
     String endereco;
 
