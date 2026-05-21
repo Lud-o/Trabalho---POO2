@@ -33,7 +33,10 @@ public class Disciplina {
     }
 
     public void setNome(String nome) {
-        this.nome = nome;
+        if (nome != null && !nome.isEmpty()) {
+            this.nome = nome;
+        }
+        return;
     }
 
     public String getNomeprofessor() {
@@ -41,7 +44,10 @@ public class Disciplina {
     }
 
     public void setNomeprofessor(String nomeprofessor) {
-        this.nomeprofessor = nomeprofessor;
+        if (nomeprofessor != null && !nomeprofessor.isEmpty()) {
+            this.nomeprofessor = nomeprofessor;
+        }
+        return;
     }
     
 }

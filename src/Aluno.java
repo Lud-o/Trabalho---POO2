@@ -41,7 +41,10 @@ public class Aluno {
 
 
     public void setNome(String nome) {
-        this.nome = nome;
+        if (nome != null && !nome.isEmpty()) {
+            this.nome = nome;
+        }
+        return;
     }
 
     public String getCpf() {
