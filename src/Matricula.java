@@ -6,25 +6,35 @@ public class Matricula {
     private LocalDate data;
     private Turma turma;
     private Aluno aluno;
+
+    //construtor
+    private Matricula(LocalDate data, Turma turma, Aluno aluno) {
+        this.data = data;
+        this.turma = turma;
+        this.aluno = aluno;
+    }
+
+    //metodo de fabrica
+    public static Matricula getInstance(LocalDate data, Turma turma, Aluno aluno) {
+        if (data != null && turma != null && aluno != null) {
+            return new Matricula(data, turma, aluno);
+        } else {
+            return null;
+        }
+    }
     
     public LocalDate getData() {
         return data;
     }
-    public void setData(LocalDate data) {
-        this.data = data;
-    }
+    
     public Turma getTurma() {
         return turma;
     }
-    public void setTurma(Turma turma) {
-        this.turma = turma;
-    }
+    
     public Aluno getAluno() {
         return aluno;
     }
-    public void setAluno(Aluno aluno) {
-        this.aluno = aluno;
-    }
+    
 
     
 }

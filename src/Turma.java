@@ -6,7 +6,7 @@ public class Turma{
 
     public boolean adiciona(Matricula mat) {
         for (int i = 0; i < matriculas.length; i++) {
-            if (mat == null) {
+            if (matriculas[i] == null) {
                 matriculas[i] = mat;
                 return true;
             }
@@ -16,12 +16,20 @@ public class Turma{
 
     public boolean adiciona(Disciplina disc) {
         for (int i = 0; i < disciplinas.length; i++) {
-            if (disc == null) {
+            if (disciplinas[i] == null) {
                 disciplinas[i] = disc;
                 return true;
             }
         }
         return false;
+    }
+
+    public Disciplina[] getDisciplinas() {
+        return disciplinas;
+    }
+
+    public Matricula[] getMatriculas() {
+        return matriculas;
     }
 
     

@@ -1,7 +1,10 @@
 public class Aluno {
-    private Matricula mat;
+    private long numero;
     private String nome;
     private String cpf;
+    private Matricula mat;
+
+    private static long totalDeAlunos = 0;
     //String endereco;
 
     // O vetor (disciplinas matriculadas + Nota)
@@ -10,13 +13,32 @@ public class Aluno {
     // Controle de quantas disciplinas matriculadas
     //int qtdDisciplinas = 0;
 
-    public Matricula getMat() {
-        return mat;
+    //construtor
+    private Aluno(String nome, String cpf) {
+        totalDeAlunos++; //incremento
+        numero = totalDeAlunos;
+        this.nome = nome;
+        this.cpf = cpf;
+        //this.mat = mat;
+    }
+
+    //metodo de fabrica
+    public static Aluno getInstance(String nome, String cpf, Matricula mat) {
+        if (nome != null && !nome.isEmpty() && cpf != null && cpf.length() == 11) {
+            return new Aluno(nome, cpf);
+        } else {
+            return null;
+        }
+    }
+    
+    public long getNumero() {
+        return numero;
     }
 
     public String getNome() {
         return nome;
     }
+
 
     public void setNome(String nome) {
         this.nome = nome;
@@ -26,8 +48,8 @@ public class Aluno {
         return cpf;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
+    public Matricula getMat() {
+        return mat;
     }
 
     
