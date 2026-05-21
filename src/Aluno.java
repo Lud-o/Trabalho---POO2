@@ -55,5 +55,12 @@ public class Aluno {
         return mat;
     }
 
+    public boolean cadastroAluno(Aluno aluno, Aluno[] bancoAlunos) { 
+        if (aluno != null) {
+            bancoAlunos[totalDeAlunos + 1] = aluno;
+            return true;
+        }
+        return false;
+    }
     
 }

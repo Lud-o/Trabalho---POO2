@@ -49,5 +49,14 @@ public class Disciplina {
         }
         return;
     }
+
+    // funcões de cadastro
+    public static boolean cadastroDisciplina(Disciplina disciplina, Disciplina[] bancoDisciplinas) {
+        if (disciplina != null) {
+            bancoDisciplinas[totalDeDisc] = disciplina;
+            return true;  
+        }
+        return false;
+    }
     
 }
