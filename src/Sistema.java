@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class Sistema {
-    //Scanner sc = new Scanner(System.in);
+    static Scanner sc = new Scanner(System.in);
 
     Aluno[] bancoAlunos = new Aluno[100];// banco de alunos
     Disciplina[] bancoDisciplinas = new Disciplina[100];// banco de Disciplinas
@@ -9,12 +9,12 @@ public class Sistema {
     Matricula[] bancoMatriculas = new Matricula[100] // banco de matriculas
 
     // variavel de controle
-    //static int totalAlunos = 0; // Quantos alunos existem
-    //static int totalDisciplinas = 0; // Quantas disciplinas existem
+    static int totalAlunos = 0; // Quantos alunos existem
+    static int totalDisciplinas = 0; // Quantas disciplinas existem
 
     // codigo (autoincremento)
-    //static int proximoCodigoAluno = 1;
-    //static int proximoCodigoDisciplina = 1;
+    static int proximoCodigoAluno = 1;
+    static int proximoCodigoDisciplina = 1;
 
     // varavel de controle da largura das colunas
     static int larguraColuna = 25;
@@ -164,7 +164,26 @@ public class Sistema {
         System.out.println("--Inicialização concluída--");
     }
 
-    
+    // funcões de cadastro
+    public static void cadastroDisciplina(Disciplina nova) {
+        nova.codigo = proximoCodigoDisciplina;
+        proximoCodigoDisciplina++;
+
+        bancoDisciplinas[totalDisciplinas] = nova;
+        totalDisciplinas++;
+
+        System.out.println("Disciplina " + nova.sigla + " cadastrada com sucesso - ID: " + nova.codigo);
+    }
+
+    public static void cadastroAluno(Aluno novo) {
+        novo.codigo = proximoCodigoAluno;
+        proximoCodigoAluno++;
+
+        bancoAlunos[totalAlunos] = novo;
+        totalAlunos++;
+
+        System.out.println("Aluno " + novo.nome + " cadastrado com sucesso - ID: " + novo.codigo);
+    }
 
     // verifica nomes iguais,aluno,disciplina e sigla
     public static int buscaAluno(String nome) {
@@ -185,23 +204,23 @@ public class Sistema {
         return -1;
     }
 
-    /*public static boolean buscanmSigla(String sigla) {
+    public static boolean buscanmSigla(String sigla) {
         for (int i = 0; i < totalDisciplinas; i++) {
             if (bancoDisciplinas[i].sigla.equalsIgnoreCase(sigla)) {
                 return true;
             }
         }
         return false;
-    }*/
+    }
 
-    /*public static String buscacdSigla(int codigo) {
+    public static String buscacdSigla(int codigo) {
         for (int i = 0; i < totalDisciplinas; i++) {
             if (bancoDisciplinas[i].codigo == codigo) {
                 return bancoDisciplinas[i].sigla;
             }
         }
         return "?";
-    }*/
+    }
 
     // verifica se o limite do vetor foi atingido antes de preencher a ficha
     public static boolean bancoAlunolimite() {
@@ -296,7 +315,82 @@ public class Sistema {
         }
     }
 
-    
+    // função de matricular aluno em uma disciplina
+    public static void matricular() {
+
+        while (true) {
+            System.out.print("Digite o nome do Aluno (voltar - 0): ");
+            String nomeAluno = sc.nextLine();
+
+            if (nomeAluno.equalsIgnoreCase("0")) {
+                System.out.println("Voltando...");
+                return;// volta pro menu
+            }
+
+            int indiceAluno = buscaAluno(nomeAluno);
+            if (indiceAluno == -1) {
+                System.out.println("Aluno não cadastrado!");
+                continue;// volta pro começo
+            }
+
+            Aluno aluno = bancoAlunos[indiceAluno];// puxando a fixas do aluno
+
+            if (aluno.qtdDisciplinas >= 10) {
+                System.out.println("Limite máximo de disciplinas atingido!");
+                return;// voltar para o menu
+            }
+
+            while (true) {
+                listarDisciplinas();// opções de disciplinas
+                System.out.print("Digite o nome da Disciplina (voltar - 0): ");
+                String nomeDiscp = sc.nextLine();
+
+                if (nomeDiscp.equalsIgnoreCase("0")) {
+                    System.out.println("Voltando...");
+                    break;// volta pro menu
+                }
+
+                int indiceDisciplina = buscaDisciplina(nomeDiscp);
+                if (indiceDisciplina == -1) {
+                    System.out.println("Disciplina não cadastrada!");
+                    continue;
+                }
+
+                Disciplina disciplina = bancoDisciplinas[indiceDisciplina]; // puxando a ficha da disciplina
+
+                // verifica disciplina ja matriculada
+                boolean jaMatriculado = false;// considera sem matricula
+                for (int i = 0; i < aluno.qtdDisciplinas; i++) {
+                    if (aluno.disciplinasMatriculadas[i].codigoDisciplina == disciplina.codigo) {
+                        System.out.println("ERRO: O aluno já está matriculado nesta disciplina!");
+                        jaMatriculado = true;
+                        break;
+                    }
+                }
+
+                if (jaMatriculado) {
+                    continue;
+                }
+
+                // matricula
+                Matricula novaMatricula = new Matricula();
+                novaMatricula.codigoDisciplina = disciplina.codigo;// adicionando codigo da disciplina no objeto
+
+                System.out.print("Digite a nota atual do aluno na disciplina: ");
+                novaMatricula.nota = sc.nextDouble();// adicionando nota da disciplina no objeto
+                sc.nextLine();// limpar o buffer
+
+                // alocando matricula e aumentando qtdDisciplinas
+                aluno.disciplinasMatriculadas[aluno.qtdDisciplinas] = novaMatricula;
+                aluno.qtdDisciplinas++;
+
+                System.out.println("--Matrícula Realizada--");
+                return;
+
+            }
+        }
+
+    }
 
     // calcula a media do aluno
     public static double calcMedia(Aluno a) {
@@ -646,7 +740,7 @@ public class Sistema {
                     break;
 
                 case 3:
-                    alterarMatricula(); 
+                    alterarMatricula(); // Aquela função completinha que já criamos!
                     break;
 
                 case 0:
@@ -738,7 +832,7 @@ public class Sistema {
                 continue; // 
             }
 
-            //confirma
+            // 1ª Trava: Confirmação
             System.out.print("ATENÇÃO: Tem certeza que deseja excluir '" + bancoAlunos[indice].nome + "'? (S/N): ");
             String confirmacao = sc.nextLine();
 
@@ -778,7 +872,7 @@ public class Sistema {
 
             Disciplina d = bancoDisciplinas[indice];
 
-            // verificação de matrículas
+            // 1ª Trava de Segurança: A Verificação de Matrículas
             boolean temGenteMatriculada = false;
 
             for (int i = 0; i < totalAlunos; i++) {
