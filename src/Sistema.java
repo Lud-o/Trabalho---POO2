@@ -246,7 +246,11 @@ public class Sistema {
 
     
     public Aluno[] getAlunos() { 
-        return bancoAlunos; 
+        Aluno[] d = new Aluno[this.bancoAlunos.length];
+        for (int i = 0; i < this.bancoAlunos.length; i++) {
+            d[i] = this.bancoAlunos[i];
+        }
+        return d; 
     }
     
     public int getTotalAlunos() { 
@@ -254,7 +258,11 @@ public class Sistema {
     }
     
     public Disciplina[] getDisciplinas() { 
-        return bancoDisciplinas; 
+        Disciplina[] d = new Disciplina[this.bancoDisciplinas.length];
+        for (int i = 0; i < this.bancoDisciplinas.length; i++) {
+            d[i] = this.bancoDisciplinas[i];
+        }
+        return d;
     }
     
     public int getTotalDisciplinas() { 
@@ -262,7 +270,11 @@ public class Sistema {
     }
     
     public Turma[] getTurmas() { 
-        return bancoTurmas; 
+        Turma[] t = new Turma[this.bancoMatriculas.length];
+        for (int i = 0; i < this.bancoTurmas.length; i++) {
+            t[i] = this.bancoTurmas[i];
+        }
+        return t;
     }
     
     public int getTotalTurmas() { 
@@ -270,7 +282,11 @@ public class Sistema {
     }
 
     public Matricula[] getMatriculas() {
-        return bancoMatriculas;
+        Matricula[] m = new Matricula[this.bancoMatriculas.length];
+        for (int i = 0; i < this.bancoMatriculas.length; i++) {
+            m[i] = this.bancoMatriculas[i];
+        }
+        return m;
     }
 
     public int getTotalMatriculas() {
