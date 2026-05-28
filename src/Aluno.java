@@ -23,7 +23,7 @@ public class Aluno {
     }
 
     //metodo de fabrica
-    public static Aluno getInstance(String nome, String cpf, Matricula mat) {
+    public static Aluno getInstance(String nome, String cpf) {
         if (nome != null && !nome.isEmpty() && cpf != null && cpf.length() == 11) {
             return new Aluno(nome, cpf);
         } else {
@@ -53,6 +53,15 @@ public class Aluno {
 
     public Matricula getMat() {
         return mat;
+    }
+
+    public boolean setMat(Matricula mat) {
+        if (mat != null && this.mat == null) {
+            this.mat = mat;
+            return true;
+        }
+        
+        return false;
     }
     
 }
