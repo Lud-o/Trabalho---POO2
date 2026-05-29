@@ -5,30 +5,34 @@ public class Aluno {
     private Matricula mat;
 
     private static long totalDeAlunos = 0;
-    //String endereco;
 
-    // O vetor (disciplinas matriculadas + Nota)
-    //Matricula[] disciplinasMatriculadas = new Matricula[10]; 
-    
-    // Controle de quantas disciplinas matriculadas
-    //int qtdDisciplinas = 0;
-
-    //construtor
     private Aluno(String nome, String cpf) {
-        totalDeAlunos++; //incremento
+        totalDeAlunos++;
         numero = totalDeAlunos;
         this.nome = nome;
         this.cpf = cpf;
-        //this.mat = mat;
     }
 
-    //metodo de fabrica
+    private Aluno(Aluno outroAluno) {
+        this.numero = outroAluno.getNumero();
+        this.nome = outroAluno.getNome();
+        this.cpf = outroAluno.getCpf();
+        this.mat = outroAluno.getMat();
+    }
+
     public static Aluno getInstance(String nome, String cpf) {
         if (nome != null && !nome.isEmpty() && cpf != null && cpf.length() == 11) {
             return new Aluno(nome, cpf);
         } else {
             return null;
         }
+    }
+
+    public static Aluno criarCopia(Aluno outroAluno) {
+        if (outroAluno != null) {
+            return new Aluno(outroAluno);
+        }
+        return null;
     }
     
     public long getNumero() {
@@ -39,12 +43,10 @@ public class Aluno {
         return nome;
     }
 
-
     public void setNome(String nome) {
         if (nome != null && !nome.isEmpty()) {
             this.nome = nome;
         }
-        return;
     }
 
     public String getCpf() {
@@ -60,8 +62,6 @@ public class Aluno {
             this.mat = mat;
             return true;
         }
-        
         return false;
     }
-    
 }

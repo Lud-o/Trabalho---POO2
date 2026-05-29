@@ -1,27 +1,36 @@
 public class Disciplina {
     private long id;
     private String nome;
-    //String sigla;
-    //int ano;
     private String nomeprofessor;
 
     private static long totalDeDisc = 0;
 
-    //construtor
     private Disciplina(String nome, String nomeprofessor) {
-        totalDeDisc++; //incremento
+        totalDeDisc++;
         id = totalDeDisc;
         this.nome = nome;
         this.nomeprofessor = nomeprofessor;
     }
 
-    //metodo de fabrica
+    private Disciplina(Disciplina outraDisciplina) {
+        this.id = outraDisciplina.getId();
+        this.nome = outraDisciplina.getNome();
+        this.nomeprofessor = outraDisciplina.getNomeprofessor();
+    }
+
     public static Disciplina getInstance(String nome, String nomeprofessor) {
         if (nome != null && !nome.isEmpty() && nomeprofessor != null && !nomeprofessor.isEmpty() ) {
             return new Disciplina(nome, nomeprofessor);
         } else {
             return null;
         }
+    }
+
+    public static Disciplina criarCopia(Disciplina outraDisciplina) {
+        if (outraDisciplina != null) {
+            return new Disciplina(outraDisciplina);
+        }
+        return null;
     }
 
     public long getId() {
@@ -36,18 +45,15 @@ public class Disciplina {
         if (nome != null && !nome.isEmpty()) {
             this.nome = nome;
         }
-        return;
     }
 
     public String getNomeprofessor() {
-    return nomeprofessor;
+        return nomeprofessor;
     }
 
     public void setNomeprofessor(String nomeprofessor) {
         if (nomeprofessor != null && !nomeprofessor.isEmpty()) {
             this.nomeprofessor = nomeprofessor;
         }
-        return;
     }
-    
 }

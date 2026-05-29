@@ -4,14 +4,12 @@ public class Sistema {
     
     private static Sistema instanciaUnica;
 
-    
     private Aluno[] bancoAlunos = new Aluno[100];
     private Disciplina[] bancoDisciplinas = new Disciplina[100];
     private Turma[] bancoTurmas = new Turma[100];
     private Matricula[] bancoMatriculas = new Matricula[100];
-    private Nota[] bancoNotas = new Nota[500];
+    private Nota[] bancoNotas = new Nota[100];
 
-    // Contadores
     private int totalAlunos = 0;
     private int totalDisciplinas = 0;
     private int totalTurmas = 0;
@@ -49,7 +47,6 @@ public class Sistema {
         }
     }
 
-    // função de busca
     public int buscaAluno(String nome) {
         for (int i = 0; i < totalAlunos; i++) {
             if (bancoAlunos[i].getNome().equalsIgnoreCase(nome)) {
@@ -77,14 +74,13 @@ public class Sistema {
         return -1;
     }
 
-    // cruds
     public boolean cadastroAluno(Aluno novo) {
         if (totalAlunos >= bancoAlunos.length || novo == null) {
             return false;
         }
         
         if (buscaAluno(novo.getNome()) != -1) {
-            return false;
+            return false; 
         }
 
         bancoAlunos[totalAlunos] = novo;
@@ -116,25 +112,49 @@ public class Sistema {
         return true;
     }
 
+    public boolean adicionarDisciplinaNaTurma(Disciplina disc, Turma turma) {
+        if (disc == null || turma == null) {
+            return false;
+        }
+
+        int idxDisc = buscaDisciplina(disc.getNome());
+        int idxTurma = buscaTurma(turma.getAno());
+
+        if (idxDisc == -1 || idxTurma == -1) {
+            return false;
+        }
+
+        return bancoTurmas[idxTurma].adiciona(bancoDisciplinas[idxDisc]);
+    }
+
     public boolean matricularAlunoEmTurma(Aluno aluno, Turma turma, LocalDate data) {
         if (aluno == null || turma == null || totalMatriculas >= bancoMatriculas.length) {
             return false;
         }
-        
-        Matricula novaMat = Matricula.getInstance(data, turma, aluno);
+
+        int idxAluno = buscaAluno(aluno.getNome());
+        int idxTurma = buscaTurma(turma.getAno());
+
+        if (idxAluno == -1 || idxTurma == -1) {
+            return false;
+        }
+
+        Aluno alunoOrig = bancoAlunos[idxAluno];
+        Turma turmaOrig = bancoTurmas[idxTurma];
+
+        Matricula novaMat = Matricula.getInstance(data, turmaOrig, alunoOrig);
         if (novaMat == null) {
             return false;
         }
 
-        // tenta matricular se não cancela
-        if (!aluno.setMat(novaMat)) {
+        if (!alunoOrig.setMat(novaMat)) {
             return false; 
         }
 
         bancoMatriculas[totalMatriculas] = novaMat;
         totalMatriculas++;
 
-        turma.adiciona(novaMat);
+        turmaOrig.adiciona(novaMat);
         return true;
     }
 
@@ -143,7 +163,27 @@ public class Sistema {
             return false;
         }
 
-        Nota novaNota = Nota.getInstance(disc, mat, valor);
+        int idxDisc = buscaDisciplina(disc.getNome());
+        if (idxDisc == -1) {
+            return false;
+        }
+
+        Disciplina discOrig = bancoDisciplinas[idxDisc];
+        Turma turmaDoAluno = mat.getTurma();
+        Disciplina[] disciplinasDaTurma = turmaDoAluno.getDisciplinas();
+        boolean pertence = false;
+
+        for (int i = 0; i < disciplinasDaTurma.length; i++) {
+            if (disciplinasDaTurma[i] != null && disciplinasDaTurma[i].getId() == discOrig.getId()) {
+                pertence = true;
+            }
+        }
+
+        if (!pertence) {
+            return false;
+        }
+
+        Nota novaNota = Nota.getInstance(discOrig, mat, valor);
         if (novaNota == null) {
             return false;
         }
@@ -153,7 +193,15 @@ public class Sistema {
         return true;
     }
 
-    // calcula a media de aluno
+    public double getNotaDoAluno(Matricula mat, Disciplina disc) {
+        for (int i = 0; i < totalNotas; i++) {
+            if (bancoNotas[i].getMatricula() == mat && bancoNotas[i].getDisc().getId() == disc.getId()) {
+                return bancoNotas[i].getValor();
+            }
+        }
+        return -1.0;
+    }
+
     public double calcularMediaAluno(Aluno aluno) {
         if (aluno == null || aluno.getMat() == null) {
             return 0.0;
@@ -177,7 +225,6 @@ public class Sistema {
         return soma / quantidadeDeNotas;
     }
 
-    // função de excluir
     public boolean excluirAluno(String nome) {
         int indice = buscaAluno(nome);
         if (indice == -1) {
@@ -230,7 +277,6 @@ public class Sistema {
             return false;
         }
 
-        // não excluir se tiver aluno
         Matricula[] matriculasDaTurma = bancoTurmas[indice].getMatriculas();
         if (matriculasDaTurma[0] != null) {
             return false; 
@@ -244,13 +290,81 @@ public class Sistema {
         return true;
     }
 
-    
-    public Aluno[] getAlunos() { 
-        Aluno[] d = new Aluno[this.bancoAlunos.length];
-        for (int i = 0; i < this.bancoAlunos.length; i++) {
-            d[i] = this.bancoAlunos[i];
+    public boolean alterarNomeAluno(String nomeAtual, String novoNome) {
+        int indice = buscaAluno(nomeAtual);
+        if (indice != -1) {
+            bancoAlunos[indice].setNome(novoNome);
+            return true;
         }
-        return d; 
+        return false;
+    }
+
+    public boolean alterarNomeDisciplina(String nomeAtual, String novoNome) {
+        int indice = buscaDisciplina(nomeAtual);
+        if (indice != -1) {
+            bancoDisciplinas[indice].setNome(novoNome);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean alterarNota(String nomeAluno, String nomeDisciplina, double novaNota) {
+        if (novaNota < 0) {
+            return false;
+        }
+        
+        int idxAluno = buscaAluno(nomeAluno);
+        int idxDisc = buscaDisciplina(nomeDisciplina);
+        
+        if (idxAluno == -1 || idxDisc == -1) {
+            return false;
+        }
+        
+        Aluno aluno = bancoAlunos[idxAluno];
+        Disciplina disc = bancoDisciplinas[idxDisc];
+        Matricula mat = aluno.getMat();
+        
+        if (mat == null) {
+            return false;
+        }
+        
+        for (int i = 0; i < totalNotas; i++) {
+            if (bancoNotas[i].getMatricula() == mat && bancoNotas[i].getDisc().getId() == disc.getId()) {
+                bancoNotas[i].setValor(novaNota);
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    public Aluno getAluno(int index) {
+        if (index >= 0 && index < totalAlunos) {
+            return Aluno.criarCopia(bancoAlunos[index]);
+        }
+        return null;
+    }
+
+    public Disciplina getDisciplina(int index) {
+        if (index >= 0 && index < totalDisciplinas) {
+            return Disciplina.criarCopia(bancoDisciplinas[index]);
+        }
+        return null;
+    }
+
+    public Turma getTurma(int index) {
+        if (index >= 0 && index < totalTurmas) {
+            return bancoTurmas[index];
+        }
+        return null;
+    }
+
+    public Aluno[] getAlunos() { 
+        Aluno[] copia = new Aluno[totalAlunos];
+        for (int i = 0; i < totalAlunos; i++) {
+            copia[i] = Aluno.criarCopia(bancoAlunos[i]);
+        }
+        return copia; 
     }
     
     public int getTotalAlunos() { 
@@ -258,11 +372,11 @@ public class Sistema {
     }
     
     public Disciplina[] getDisciplinas() { 
-        Disciplina[] d = new Disciplina[this.bancoDisciplinas.length];
-        for (int i = 0; i < this.bancoDisciplinas.length; i++) {
-            d[i] = this.bancoDisciplinas[i];
+        Disciplina[] copia = new Disciplina[totalDisciplinas];
+        for (int i = 0; i < totalDisciplinas; i++) {
+            copia[i] = Disciplina.criarCopia(bancoDisciplinas[i]);
         }
-        return d;
+        return copia;
     }
     
     public int getTotalDisciplinas() { 
@@ -270,11 +384,11 @@ public class Sistema {
     }
     
     public Turma[] getTurmas() { 
-        Turma[] t = new Turma[this.bancoMatriculas.length];
-        for (int i = 0; i < this.bancoTurmas.length; i++) {
-            t[i] = this.bancoTurmas[i];
+        Turma[] copia = new Turma[totalTurmas];
+        for (int i = 0; i < totalTurmas; i++) {
+            copia[i] = bancoTurmas[i];
         }
-        return t;
+        return copia;
     }
     
     public int getTotalTurmas() { 
@@ -282,11 +396,11 @@ public class Sistema {
     }
 
     public Matricula[] getMatriculas() {
-        Matricula[] m = new Matricula[this.bancoMatriculas.length];
-        for (int i = 0; i < this.bancoMatriculas.length; i++) {
-            m[i] = this.bancoMatriculas[i];
+        Matricula[] copia = new Matricula[totalMatriculas];
+        for (int i = 0; i < totalMatriculas; i++) {
+            copia[i] = bancoMatriculas[i];
         }
-        return m;
+        return copia;
     }
 
     public int getTotalMatriculas() {

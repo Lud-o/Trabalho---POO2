@@ -8,7 +8,7 @@ public class Main {
 
     public Main() {
         this.sc = new Scanner(System.in);
-        this.larguraColuna = 25; // padrão é 25
+        this.larguraColuna = 25; 
     }
 
     public static void main(String[] args) {
@@ -43,14 +43,15 @@ public class Main {
             System.out.println("│  [11] Listar Alunos (Ordem de Cadastro)  │");
             System.out.println("│  [12] Listar Alunos (Ordem de Media)     │");
             System.out.println("│  [13] Listar Matrículas                  │");
-            System.out.println("│  [14] Configurar Largura das Colunas     │");
+            System.out.println("│  [14] Listar Notas do Aluno              │");
+            System.out.println("│  [15] Configurar Largura das Colunas     │");
             System.out.println("├──────────────────────────────────────────┤");
             System.out.println("│  [0] Sair do Sistema                     │");
             System.out.println("└──────────────────────────────────────────┘");
             System.out.print("Escolha uma opção: ");
             
             opcao = sc.nextInt();
-            sc.nextLine(); // Limpa buffer
+            sc.nextLine(); 
 
             switch (opcao) {
                 case 1: 
@@ -93,6 +94,9 @@ public class Main {
                     listarMatriculas(sistema); 
                     break;
                 case 14: 
+                    listarNotasAluno(sistema); 
+                    break;
+                case 15: 
                     configurarLargura(); 
                     break;
                 case 0: 
@@ -107,7 +111,6 @@ public class Main {
         sc.close();
     }
 
-    // fichas
     private void fichaAluno(Sistema sistema) {
         System.out.print("Digite o nome do Aluno (ou 0 para voltar): ");
         String nome = sc.nextLine();
@@ -159,7 +162,6 @@ public class Main {
         }
     }
 
-    // operações
     private void adicionarDisciplinaNaTurma(Sistema sistema) {
         System.out.print("Ano da Turma: ");
         int ano = sc.nextInt();
@@ -180,13 +182,10 @@ public class Main {
             return;
         }
 
-        Turma[] vetorTurmas = sistema.getTurmas();
-        Turma turmaEncontrada = vetorTurmas[idxTurma];
+        Disciplina discEncontrada = sistema.getDisciplina(idxDisc);
+        Turma turmaEncontrada = sistema.getTurma(idxTurma);
 
-        Disciplina[] vetorDisciplinas = sistema.getDisciplinas();
-        Disciplina discEncontrada = vetorDisciplinas[idxDisc];
-
-        boolean sucesso = turmaEncontrada.adiciona(discEncontrada);
+        boolean sucesso = sistema.adicionarDisciplinaNaTurma(discEncontrada, turmaEncontrada);
         if (sucesso) {
             System.out.println("Disciplina vinculada a turma!");
         } else {
@@ -219,17 +218,10 @@ public class Main {
 
         LocalDate dataDigitada = LocalDate.of(anoMat, mes, dia);
 
-        Aluno[] vetorAlunos = sistema.getAlunos();
-        Aluno alunoEncontrado = vetorAlunos[idxAluno];
+        Aluno alunoEncontrado = sistema.getAluno(idxAluno);
+        Turma turmaEncontrada = sistema.getTurma(idxTurma);
 
-        Turma[] vetorTurmas = sistema.getTurmas();
-        Turma turmaEncontrada = vetorTurmas[idxTurma];
-
-        boolean sucesso = sistema.matricularAlunoEmTurma(
-            alunoEncontrado, 
-            turmaEncontrada, 
-            dataDigitada
-        );
+        boolean sucesso = sistema.matricularAlunoEmTurma(alunoEncontrado, turmaEncontrada, dataDigitada);
 
         if (sucesso) {
             System.out.println("Matrícula efetuada com sucesso!");
@@ -247,8 +239,7 @@ public class Main {
             return;
         }
 
-        Aluno[] vetorAlunos = sistema.getAlunos();
-        Aluno alunoEncontrado = vetorAlunos[idxAluno];
+        Aluno alunoEncontrado = sistema.getAluno(idxAluno);
         Matricula matDoAluno = alunoEncontrado.getMat();
         
         if (matDoAluno == null) {
@@ -264,8 +255,7 @@ public class Main {
             return;
         }
 
-        Disciplina[] vetorDisciplinas = sistema.getDisciplinas();
-        Disciplina discEncontrada = vetorDisciplinas[idxDisc];
+        Disciplina discEncontrada = sistema.getDisciplina(idxDisc);
 
         System.out.print("Digite o valor da nota: ");
         double valorNota = sc.nextDouble();
@@ -279,10 +269,10 @@ public class Main {
         }
     }
 
-    // alterar e excluir
     private void alterarDados(Sistema sistema) {
         System.out.println("\n[1] Alterar Nome de Aluno");
         System.out.println("[2] Alterar Nome de Disciplina");
+        System.out.println("[3] Alterar Nota de Aluno");
         System.out.print("Escolha: ");
         int op = sc.nextInt();
         sc.nextLine();
@@ -290,13 +280,10 @@ public class Main {
         if (op == 1) {
             System.out.print("Nome atual do Aluno: ");
             String nome = sc.nextLine();
-            int idx = sistema.buscaAluno(nome);
+            System.out.print("Novo nome: ");
+            String novoNome = sc.nextLine();
             
-            if (idx != -1) {
-                System.out.print("Novo nome: ");
-                Aluno[] vetorAlunos = sistema.getAlunos();
-                Aluno aluno = vetorAlunos[idx];
-                aluno.setNome(sc.nextLine());
+            if (sistema.alterarNomeAluno(nome, novoNome)) {
                 System.out.println("Sucesso!");
             } else {
                 System.out.println("Aluno não encontrado.");
@@ -305,16 +292,28 @@ public class Main {
         } else if (op == 2) {
             System.out.print("Nome atual da Disciplina: ");
             String nome = sc.nextLine();
-            int idx = sistema.buscaDisciplina(nome);
+            System.out.print("Novo nome: ");
+            String novoNome = sc.nextLine();
             
-            if (idx != -1) {
-                System.out.print("Novo nome: ");
-                Disciplina[] vetorDisciplinas = sistema.getDisciplinas();
-                Disciplina disciplina = vetorDisciplinas[idx];
-                disciplina.setNome(sc.nextLine());
+            if (sistema.alterarNomeDisciplina(nome, novoNome)) {
                 System.out.println("Sucesso!");
             } else {
                 System.out.println("Disciplina não encontrada.");
+            }
+            
+        } else if (op == 3) {
+            System.out.print("Nome do Aluno: ");
+            String nomeAluno = sc.nextLine();
+            System.out.print("Nome da Disciplina: ");
+            String nomeDisc = sc.nextLine();
+            System.out.print("Novo valor da nota: ");
+            double novaNota = sc.nextDouble();
+            sc.nextLine();
+            
+            if (sistema.alterarNota(nomeAluno, nomeDisc, novaNota)) {
+                System.out.println("Sucesso!");
+            } else {
+                System.out.println("ERRO: Nota não encontrada ou dados inválidos.");
             }
         }
     }
@@ -360,9 +359,9 @@ public class Main {
         }
     }
 
-    // tabelas
     private void listarTurmas(Sistema sistema) {
-        if (sistema.getTotalTurmas() == 0) {
+        Turma[] vetorTurmas = sistema.getTurmas();
+        if (vetorTurmas.length == 0) {
             System.out.println("Nenhuma turma cadastrada.");
             return;
         }
@@ -370,15 +369,15 @@ public class Main {
         String formato = "%-10s | %-10s\n";
         System.out.printf(formato, "ANO", "VAGAS");
 
-        Turma[] vetorTurmas = sistema.getTurmas();
-        for (int i = 0; i < sistema.getTotalTurmas(); i++) {
+        for (int i = 0; i < vetorTurmas.length; i++) {
             Turma t = vetorTurmas[i];
             System.out.printf(formato, t.getAno(), t.getVagas());
         }
     }
 
     private void listarMatriculas(Sistema sistema) {
-        if (sistema.getTotalMatriculas() == 0) {
+        Matricula[] vetorMatriculas = sistema.getMatriculas();
+        if (vetorMatriculas.length == 0) {
             System.out.println("Nenhuma matricula realizada.");
             return;
         }
@@ -386,15 +385,15 @@ public class Main {
         String formato = "%-12s | %-" + larguraColuna + "s | %-15s\n";
         System.out.printf(formato, "DATA", "NOME DO ALUNO", "ANO DA TURMA");
 
-        Matricula[] vetorMatriculas = sistema.getMatriculas();
-        for (int i = 0; i < sistema.getTotalMatriculas(); i++) {
+        for (int i = 0; i < vetorMatriculas.length; i++) {
             Matricula m = vetorMatriculas[i];
             System.out.printf(formato, m.getData().toString(), m.getAluno().getNome(), m.getTurma().getAno());
         }
     }
 
     private void listarAlunosOC(Sistema sistema) {
-        if (sistema.getTotalAlunos() == 0) {
+        Aluno[] vetorAlunos = sistema.getAlunos();
+        if (vetorAlunos.length == 0) {
             System.out.println("Nenhum aluno cadastrado.");
             return;
         }
@@ -402,8 +401,7 @@ public class Main {
         String formato = "%-5s | %-" + larguraColuna + "s | %-15s | %-6s\n";
         System.out.printf(formato, "ID", "NOME DO ALUNO", "CPF", "MEDIA");
         
-        Aluno[] vetorAlunos = sistema.getAlunos();
-        for (int i = 0; i < sistema.getTotalAlunos(); i++) {
+        for (int i = 0; i < vetorAlunos.length; i++) {
             Aluno a = vetorAlunos[i];
             double media = sistema.calcularMediaAluno(a);
             System.out.printf(formato, a.getNumero(), a.getNome(), a.getCpf(), media);
@@ -411,30 +409,23 @@ public class Main {
     }
 
     private void listarAlunosOMd(Sistema sistema) {
-        if (sistema.getTotalAlunos() == 0) {
+        Aluno[] vetorAlunos = sistema.getAlunos();
+        if (vetorAlunos.length == 0) {
             System.out.println("Nenhum aluno cadastrado.");
             return;
         }
 
-        // cria um vetor copia para não mexer na ordem original do sistema
-        int total = sistema.getTotalAlunos();
-        Aluno[] copiaAlunos = new Aluno[total];
-        Aluno[] vetorAlunos = sistema.getAlunos();
+        int total = vetorAlunos.length;
         
-        for (int i = 0; i < total; i++) {
-            copiaAlunos[i] = vetorAlunos[i];
-        }
-
-        // bubble sort (ordena de forma decrescente pela media)
         for (int i = 0; i < total - 1; i++) {
             for (int j = 0; j < total - 1 - i; j++) {
-                double media1 = sistema.calcularMediaAluno(copiaAlunos[j]);
-                double media2 = sistema.calcularMediaAluno(copiaAlunos[j + 1]);
+                double media1 = sistema.calcularMediaAluno(vetorAlunos[j]);
+                double media2 = sistema.calcularMediaAluno(vetorAlunos[j + 1]);
                 
                 if (media2 > media1) {
-                    Aluno temporario = copiaAlunos[j];
-                    copiaAlunos[j] = copiaAlunos[j + 1];
-                    copiaAlunos[j + 1] = temporario;
+                    Aluno temporario = vetorAlunos[j];
+                    vetorAlunos[j] = vetorAlunos[j + 1];
+                    vetorAlunos[j + 1] = temporario;
                 }
             }
         }
@@ -443,14 +434,15 @@ public class Main {
         System.out.printf(formato, "ID", "NOME DO ALUNO", "CPF", "MEDIA");
 
         for (int i = 0; i < total; i++) {
-            Aluno a = copiaAlunos[i];
+            Aluno a = vetorAlunos[i];
             double media = sistema.calcularMediaAluno(a);
             System.out.printf(formato, a.getNumero(), a.getNome(), a.getCpf(), media);
         }
     }
 
     private void listarDisciplinas(Sistema sistema) {
-        if (sistema.getTotalDisciplinas() == 0) {
+        Disciplina[] vetorDisciplinas = sistema.getDisciplinas();
+        if (vetorDisciplinas.length == 0) {
             System.out.println("Nenhuma disciplina cadastrada.");
             return;
         }
@@ -458,11 +450,54 @@ public class Main {
         String formato = "%-5s | %-" + larguraColuna + "s | %-" + larguraColuna + "s\n";
         System.out.printf(formato, "ID", "DISCIPLINA", "PROFESSOR");
         
-        Disciplina[] vetorDisciplinas = sistema.getDisciplinas();
-        for (int i = 0; i < sistema.getTotalDisciplinas(); i++) {
+        for (int i = 0; i < vetorDisciplinas.length; i++) {
             Disciplina d = vetorDisciplinas[i];
             System.out.printf(formato, d.getId(), d.getNome(), d.getNomeprofessor());
         }
+    }
+
+    private void listarNotasAluno(Sistema sistema) {
+        System.out.print("Nome do Aluno: ");
+        String nome = sc.nextLine();
+        int idxAluno = sistema.buscaAluno(nome);
+
+        if (idxAluno == -1) {
+            System.out.println("ERRO: Aluno não encontrado.");
+            return;
+        }
+
+        Aluno aluno = sistema.getAluno(idxAluno);
+        Matricula mat = aluno.getMat();
+
+        if (mat == null) {
+            System.out.println("ERRO: Aluno não está matriculado em nenhuma turma.");
+            return;
+        }
+
+        Turma turma = mat.getTurma();
+        Disciplina[] disciplinasTurma = turma.getDisciplinas();
+
+        System.out.println("\n--- BOLETIM DE NOTAS ---");
+        System.out.println("ALUNO: " + aluno.getNome());
+        System.out.println("TURMA: " + turma.getAno());
+        System.out.println("------------------------");
+
+        String formato = "%-" + larguraColuna + "s | %-10s\n";
+        System.out.printf(formato, "DISCIPLINA", "NOTA");
+
+        for (int i = 0; i < disciplinasTurma.length; i++) {
+            Disciplina d = disciplinasTurma[i];
+            if (d != null) {
+                double valorNota = sistema.getNotaDoAluno(mat, d);
+                if (valorNota == -1.0) {
+                    System.out.printf(formato, d.getNome(), "Sem nota");
+                } else {
+                    System.out.printf(formato, d.getNome(), valorNota);
+                }
+            }
+        }
+        System.out.println("------------------------");
+        System.out.println("MEDIA FINAL: " + sistema.calcularMediaAluno(aluno));
     }
 
     private void configurarLargura() {
